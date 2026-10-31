@@ -164,6 +164,5 @@ Los tiempos dependen del equipo; nodos, costos y memoria son deterministas.
 
 ## 9. Herramientas de apoyo
 
-Se utilizó Claude (Anthropic) como asistente para revisar el código, ajustar
-el modelo de costos, completar las métricas de Minimax y redactar
+Se utilizó Claude (Anthropic) como asistente para revisar el código y redactar
 documentación. El grupo revisó y validó todos los cambios.

@@ -1,11 +1,10 @@
 """Punto de entrada del laboratorio de búsqueda y juegos."""
 
 from comparador import (
-    ejecutar_comparacion, 
-    mostrar_resultados,
-    mostrar_solucion, 
     ALGORITMOS,
-
+    ejecutar_comparacion,
+    mostrar_resultados,
+    mostrar_solucion,
 )
 
 from mapas_prueba import PUZZLES
@@ -35,7 +34,10 @@ def main() -> None:
     nombres_algoritmos = list(ALGORITMOS)
 
     while True:
-        opciones_principales = ["Resolver un 8-puzzle", "Jugar triqui contra Minimax"]
+        opciones_principales = [
+            "Resolver un 8-puzzle (DFS, BFS, BCU, A*)",
+            "Jugar triqui contra Minimax con poda alfa-beta",
+        ]
         indice_principal = pedir_opcion("Selecciona una aplicación:", opciones_principales)
 
         if indice_principal == 1:
@@ -58,7 +60,7 @@ def main() -> None:
         else:
             seleccionados = [nombres_algoritmos[indice_algoritmo]]
 
-        print("\nESTADO INICIAL (0 = espacio vacío)")
+        print("\nESTADO INICIAL (_ = espacio vacío; mover la ficha n cuesta n)")
         print("-" * 30)
         puzzle.imprimir()
         print()
@@ -66,11 +68,15 @@ def main() -> None:
         resultados = ejecutar_comparacion(puzzle, seleccionados)
         mostrar_resultados(resultados, puzzle)
  
+        ver_tableros = input(
+            "\n¿Mostrar los tableros paso a paso? (s/n): "
+        ).strip().lower() == "s"
+
         print("\nSOLUCIONES ENCONTRADAS")
         print("-" * 30)
- 
+
         for nombre, resultado in resultados.items():
-            mostrar_solucion(nombre, resultado, puzzle)
+            mostrar_solucion(nombre, resultado, puzzle, ver_tableros)
  
         otra = input("\n¿Ejecutar otra búsqueda? (s/n): ").strip().lower()
  
@@ -78,9 +84,6 @@ def main() -> None:
             break
  
     print("Fin del programa.")
-
-
-
 
 
 if __name__ == "__main__":

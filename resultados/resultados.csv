@@ -1,21 +1,26 @@
-puzzle,algoritmo,ruta_encontrada,nodos_expandidos,costo_total,pasos,tiempo_ms
-8-puzzle fácil,DFS,SI,3,2,2,0.0432
-8-puzzle fácil,BFS,SI,7,2,2,0.0257
-8-puzzle fácil,BCU,SI,7,2,2,0.0353
-8-puzzle fácil,A* Manhattan,SI,3,2,2,0.0416
-8-puzzle fácil,A* Propia,SI,3,2,2,0.0238
-8-puzzle medio,DFS,SI,9,8,8,0.1775
-8-puzzle medio,BFS,SI,311,8,8,1.0498
-8-puzzle medio,BCU,SI,311,8,8,1.5570
-8-puzzle medio,A* Manhattan,SI,13,8,8,0.2056
-8-puzzle medio,A* Propia,SI,19,8,8,0.1752
-8-puzzle difícil,DFS,SI,82,80,80,1.7045
-8-puzzle difícil,BFS,SI,55409,20,20,205.9360
-8-puzzle difícil,BCU,SI,55409,20,20,343.3239
-8-puzzle difícil,A* Manhattan,SI,283,20,20,5.9798
-8-puzzle difícil,A* Propia,SI,3667,20,20,37.7350
-8-puzzle sin solución,DFS,NO,181440,0,0,3702.6964
-8-puzzle sin solución,BFS,NO,181440,0,0,650.4182
-8-puzzle sin solución,BCU,NO,181440,0,0,1129.3194
-8-puzzle sin solución,A* Manhattan,NO,181440,0,0,2274.9816
-8-puzzle sin solución,A* Propia,NO,181440,0,0,1607.2316
+puzzle,algoritmo,ruta_encontrada,nodos_expandidos,costo_total,pasos,memoria,max_frontera,tiempo_ms
+8-puzzle fácil,DFS,SI,3,15,2,5,3,0.0154
+8-puzzle fácil,BFS,SI,7,15,2,14,8,0.0122
+8-puzzle fácil,BCU,SI,15,15,2,28,14,0.0297
+8-puzzle fácil,A* Manhattan,SI,8,15,2,16,9,0.0526
+8-puzzle fácil,A* Propia,SI,3,15,2,5,3,0.0208
+8-puzzle medio,DFS,SI,9,37,8,18,10,0.0619
+8-puzzle medio,BFS,SI,311,37,8,500,190,0.3990
+8-puzzle medio,BCU,SI,387,37,8,638,252,0.8842
+8-puzzle medio,A* Manhattan,SI,140,37,8,235,96,1.0397
+8-puzzle medio,A* Propia,SI,13,37,8,24,12,0.1030
+8-puzzle costo vs. pasos,DFS,SI,13,54,12,24,12,0.1246
+8-puzzle costo vs. pasos,BFS,SI,2359,54,12,3653,1295,3.8719
+8-puzzle costo vs. pasos,BCU,SI,896,44,14,1438,544,2.0188
+8-puzzle costo vs. pasos,A* Manhattan,SI,360,44,14,589,231,1.9001
+8-puzzle costo vs. pasos,A* Propia,SI,67,44,14,110,44,0.3718
+8-puzzle difícil,DFS,SI,82,406,80,150,69,0.5649
+8-puzzle difícil,BFS,SI,55409,78,20,74203,18858,104.0745
+8-puzzle difícil,BCU,SI,27095,78,20,38738,11908,105.5908
+8-puzzle difícil,A* Manhattan,SI,8471,78,20,12921,4500,63.9505
+8-puzzle difícil,A* Propia,SI,229,78,20,378,150,1.2750
+8-puzzle sin solución,DFS,NO,181440,0,0,181440,37248,1455.4204
+8-puzzle sin solución,BFS,NO,181440,0,0,181440,24054,337.2620
+8-puzzle sin solución,BCU,NO,181440,0,0,181440,23605,899.8622
+8-puzzle sin solución,A* Manhattan,NO,181440,0,0,181440,22086,1303.5214
+8-puzzle sin solución,A* Propia,NO,181440,0,0,181440,18374,1309.6950

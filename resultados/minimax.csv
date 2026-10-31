@@ -1,0 +1,13 @@
+escenario,profundidad,jugada,valor,nodos_sin_poda,nodos_con_poda,reduccion_pct,tiempo_sin_ms,tiempo_con_ms,misma_decision
+Tablero vacío,2,5,1,82,36,56.1,0.361,0.136,SI
+Tablero vacío,4,5,0,3610,635,82.4,11.581,1.822,SI
+Tablero vacío,6,5,0,73450,4632,93.7,195.720,10.941,SI
+Tablero vacío,9,1,0,549946,20866,96.2,718.197,27.963,SI
+X en una esquina,2,5,-10,65,36,44.6,0.231,0.100,SI
+X en una esquina,4,5,-10,2081,475,77.2,5.890,1.194,SI
+X en una esquina,6,5,-10,24425,1689,93.1,53.040,4.364,SI
+X en una esquina,9,5,0,59705,2788,95.3,78.705,3.796,SI
+"X centro, O esquina, X esquina",2,3,-11,37,25,32.4,0.117,0.067,SI
+"X centro, O esquina, X esquina",4,3,-10,469,131,72.1,0.999,0.275,SI
+"X centro, O esquina, X esquina",6,3,0,1173,288,75.4,1.538,0.410,SI
+"X centro, O esquina, X esquina",9,3,0,1173,288,75.4,1.541,0.391,SI

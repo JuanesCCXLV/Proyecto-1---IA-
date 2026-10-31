@@ -7,10 +7,13 @@ Requiere matplotlib:
     pip install matplotlib
 
 Produce, en la carpeta ``resultados/``:
-    - resultados.csv
+    - resultados.csv          (8-puzzle: todos los algoritmos y casos)
+    - minimax.csv             (triqui: nodos evaluados con y sin poda)
     - nodos_expandidos.png
     - costo_total.png
+    - memoria.png
     - tiempo_ejecucion.png
+    - minimax_poda.png
 """
 
 import csv
@@ -24,6 +27,17 @@ import matplotlib.pyplot as plt
 
 from comparador import ALGORITMOS, ejecutar_comparacion
 from mapas_prueba import PUZZLES
+from minimax import HUMANO, MAQUINA, VACIO, comparar_poda
+
+
+# Tableros del triqui en los que juega la máquina (O), para medir la poda.
+# Se leen fila por fila; "." es una casilla vacía.
+ESCENARIOS_MINIMAX = {
+    "Tablero vacío": ".........",
+    "X en una esquina": "X........",
+    "X centro, O esquina, X esquina": "O...X...X",
+}
+PROFUNDIDADES_MINIMAX = (2, 4, 6, 9)
 
 
 CARPETA_SALIDA = Path("resultados")
@@ -55,6 +69,8 @@ def guardar_csv(datos: Datos, ruta: Path) -> None:
             "nodos_expandidos",
             "costo_total",
             "pasos",
+            "memoria",
+            "max_frontera",
             "tiempo_ms",
         ])
 
@@ -67,6 +83,8 @@ def guardar_csv(datos: Datos, ruta: Path) -> None:
                     r["nodos_expandidos"],
                     r["costo_total"],
                     r["longitud_camino"],
+                    r["memoria"],
+                    r["max_frontera"],
                     f"{r['tiempo_ejecucion_ms']:.4f}",
                 ])
 
@@ -77,8 +95,13 @@ def graficar_barras(
     titulo: str,
     etiqueta_y: str,
     ruta: Path,
+    escala_log: bool = False,
 ) -> None:
-    """Crea un gráfico de barras agrupadas: un grupo por puzzle."""
+    """Crea un gráfico de barras agrupadas: un grupo por puzzle.
+
+    Con ``escala_log=True`` el eje Y es logarítmico, para que se vean a la
+    vez valores pequeños (decenas) y grandes (decenas de miles).
+    """
     puzzles = [
         nombre
         for nombre, resultados in datos.items()
@@ -117,9 +140,12 @@ def graficar_barras(
 
     eje.set_xticks(range(len(puzzles)))
     eje.set_xticklabels(puzzles, fontsize=9)
+    if escala_log:
+        eje.set_yscale("log")
+        etiqueta_y += " (escala log)"
     eje.set_ylabel(etiqueta_y)
     eje.set_title(titulo)
-    eje.legend()
+    eje.legend(fontsize=8)
     eje.grid(axis="y", alpha=0.3)
 
     figura.tight_layout()
@@ -127,8 +153,72 @@ def graficar_barras(
     plt.close(figura)
 
 
+def tablero_desde_texto(texto: str) -> tuple:
+    """Convierte "X...O...." en una tupla de tablero."""
+    equivalencias = {"X": HUMANO, "O": MAQUINA, ".": VACIO}
+    return tuple(equivalencias[c] for c in texto)
+
+
+def recolectar_minimax() -> list:
+    """Mide nodos evaluados con y sin poda en varios tableros y profundidades."""
+    filas = []
+    for escenario, texto in ESCENARIOS_MINIMAX.items():
+        tablero = tablero_desde_texto(texto)
+        for profundidad in PROFUNDIDADES_MINIMAX:
+            m = comparar_poda(tablero, profundidad)
+            filas.append({"escenario": escenario, "profundidad": profundidad, **m})
+    return filas
+
+
+def guardar_csv_minimax(filas: list, ruta: Path) -> None:
+    """Guarda las métricas de Minimax en un CSV."""
+    with open(ruta, "w", newline="", encoding="utf-8") as archivo:
+        escritor = csv.writer(archivo)
+        escritor.writerow([
+            "escenario", "profundidad", "jugada", "valor",
+            "nodos_sin_poda", "nodos_con_poda", "reduccion_pct",
+            "tiempo_sin_ms", "tiempo_con_ms", "misma_decision",
+        ])
+        for f in filas:
+            escritor.writerow([
+                f["escenario"], f["profundidad"], f["posicion"] + 1, f["valor"],
+                f["nodos_sin_poda"], f["nodos_con_poda"],
+                f"{f['reduccion_pct']:.1f}",
+                f"{f['tiempo_sin_ms']:.3f}", f"{f['tiempo_con_ms']:.3f}",
+                "SI" if f["misma_decision"] else "NO",
+            ])
+
+
+def graficar_minimax(filas: list, ruta: Path) -> None:
+    """Barras de nodos evaluados con y sin poda (escala logarítmica)."""
+    vacio = [f for f in filas if f["escenario"] == "Tablero vacío"]
+    etiquetas = [f"Prof. {f['profundidad']}" for f in vacio]
+    posiciones = range(len(vacio))
+    figura, eje = plt.subplots(figsize=(9, 5))
+    barras_sin = eje.bar([p - 0.2 for p in posiciones],
+                         [f["nodos_sin_poda"] for f in vacio], 0.4,
+                         label="Sin poda")
+    barras_con = eje.bar([p + 0.2 for p in posiciones],
+                         [f["nodos_con_poda"] for f in vacio], 0.4,
+                         label="Con poda alfa-beta")
+    for barra in list(barras_sin) + list(barras_con):
+        eje.annotate(f"{int(barra.get_height()):,}".replace(",", "."),
+                     (barra.get_x() + barra.get_width() / 2, barra.get_height()),
+                     ha="center", va="bottom", fontsize=8)
+    eje.set_yscale("log")
+    eje.set_xticks(list(posiciones))
+    eje.set_xticklabels(etiquetas)
+    eje.set_ylabel("Nodos evaluados (escala log)")
+    eje.set_title("Minimax desde el tablero vacío: nodos con y sin poda")
+    eje.legend()
+    eje.grid(axis="y", alpha=0.3)
+    figura.tight_layout()
+    figura.savefig(ruta, dpi=150)
+    plt.close(figura)
+
+
 def main() -> None:
-    """Genera el CSV y las tres gráficas."""
+    """Genera los CSV y las gráficas."""
     CARPETA_SALIDA.mkdir(exist_ok=True)
     datos = recolectar_datos()
 
@@ -140,13 +230,22 @@ def main() -> None:
         "Nodos expandidos por algoritmo y puzzle",
         "Nodos expandidos",
         CARPETA_SALIDA / "nodos_expandidos.png",
+        escala_log=True,
     )
     graficar_barras(
         datos,
         "costo_total",
-        "Movimientos por algoritmo y puzzle",
+        "Costo total de la solución por algoritmo y puzzle",
         "Costo total",
         CARPETA_SALIDA / "costo_total.png",
+    )
+    graficar_barras(
+        datos,
+        "memoria",
+        "Estados almacenados en memoria por algoritmo y puzzle",
+        "Estados almacenados",
+        CARPETA_SALIDA / "memoria.png",
+        escala_log=True,
     )
     graficar_barras(
         datos,
@@ -154,7 +253,12 @@ def main() -> None:
         "Tiempo de ejecución promedio por algoritmo y puzzle",
         "Tiempo (ms)",
         CARPETA_SALIDA / "tiempo_ejecucion.png",
+        escala_log=True,
     )
+
+    filas_minimax = recolectar_minimax()
+    guardar_csv_minimax(filas_minimax, CARPETA_SALIDA / "minimax.csv")
+    graficar_minimax(filas_minimax, CARPETA_SALIDA / "minimax_poda.png")
 
     print(f"Archivos generados en la carpeta '{CARPETA_SALIDA}/'.")
 

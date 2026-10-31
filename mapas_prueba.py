@@ -18,8 +18,17 @@ def puzzle_medio() -> Puzzle:
     return Puzzle((1, 3, 6, 5, 0, 2, 4, 7, 8), OBJETIVO)
 
 
+def puzzle_costo_vs_pasos() -> Puzzle:
+    """Estado donde la ruta más corta (12 movimientos) no es la más barata.
+
+    BFS devuelve 12 movimientos con costo 54; la ruta de menor costo tiene
+    14 movimientos y cuesta 44, porque evita mover las fichas grandes.
+    """
+    return Puzzle((2, 5, 3, 4, 0, 1, 7, 8, 6), OBJETIVO)
+
+
 def puzzle_dificil() -> Puzzle:
-    """Estado válido que requiere una búsqueda más amplia."""
+    """Estado válido que requiere una búsqueda más amplia (20 movimientos)."""
     return Puzzle((7, 2, 4, 5, 0, 6, 8, 3, 1), OBJETIVO)
 
 
@@ -31,6 +40,7 @@ def puzzle_sin_solucion() -> Puzzle:
 PUZZLES: Dict[str, Callable[[], Puzzle]] = {
     "8-puzzle fácil": puzzle_facil,
     "8-puzzle medio": puzzle_medio,
+    "8-puzzle costo vs. pasos": puzzle_costo_vs_pasos,
     "8-puzzle difícil": puzzle_dificil,
     "8-puzzle sin solución": puzzle_sin_solucion,
 }

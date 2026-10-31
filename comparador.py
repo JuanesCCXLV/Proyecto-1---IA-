@@ -24,7 +24,7 @@ ALGORITMOS: Dict[str, Callable[[Puzzle], Resultado]] = {
 # Cuántas veces se repite cada algoritmo para promediar el tiempo.
 REPETICIONES_TIEMPO = 20
  
-ANCHO_TABLA = 90
+ANCHO_TABLA = 86
  
  
 def ejecutar_algoritmo(
@@ -69,20 +69,25 @@ def mostrar_resultados(
     puzzle: Puzzle,
 ) -> None:
     """Imprime una tabla comparativa de resultados.
-    
-    La columna de costo permite comparar la calidad de las soluciones.
+
+    ``Costo`` es la suma de los costos de las fichas movidas, ``Pasos`` la
+    profundidad de la solución y ``Memoria`` el número de estados
+    almacenados. ``Óptimo`` indica si el costo coincide con el menor costo
+    encontrado entre los algoritmos ejecutados.
     """
     print("=" * ANCHO_TABLA)
     print("RESULTADOS DE BÚSQUEDA DEL 8-PUZZLE")
     print("=" * ANCHO_TABLA)
 
     encabezado = (
-        f"{'Algoritmo':<15} | "
-        f"{'Nodos':>8} | "
-        f"{'Costo':>8} | "
-        f"{'Pasos':>8} | "
-        f"{'Ruta':>8} | "
-        f"{'Tiempo (ms)':>12}"
+        f"{'Algoritmo':<13} | "
+        f"{'Ruta':>4} | "
+        f"{'Nodos exp.':>10} | "
+        f"{'Memoria':>8} | "
+        f"{'Pasos':>5} | "
+        f"{'Costo':>5} | "
+        f"{'Óptimo':>6} | "
+        f"{'Tiempo (ms)':>11}"
     )
 
     print(encabezado)
@@ -94,24 +99,23 @@ def mostrar_resultados(
     for nombre, resultado in resultados.items():
         ruta = "SÍ" if resultado["encontrado"] else "NO"
 
-        if not resultado["encontrado"]:
-            optimo = "-"
-        elif len(resultados) == 1:
+        if not resultado["encontrado"] or len(resultados) == 1:
             optimo = "-"
         else:
-            optimo = (
-                "Si"
-                if resultado["costo_total"] == costo_minimo
-                else "No"
-            )
+            optimo = "Sí" if resultado["costo_total"] == costo_minimo else "No"
+
+        pasos = resultado["longitud_camino"] if resultado["encontrado"] else "-"
+        costo = resultado["costo_total"] if resultado["encontrado"] else "-"
 
         print(
-            f"{nombre:<15} | "
-            f"{resultado['nodos_expandidos']:>8} | "
-            f"{resultado['costo_total']:>8} | "
-            f"{resultado['longitud_camino']:>8} | "
-            f"{ruta:>8} | "
-            f"{resultado['tiempo_ejecucion_ms']:>12.4f}"
+            f"{nombre:<13} | "
+            f"{ruta:>4} | "
+            f"{resultado['nodos_expandidos']:>10} | "
+            f"{resultado['memoria']:>8} | "
+            f"{pasos:>5} | "
+            f"{costo:>5} | "
+            f"{optimo:>6} | "
+            f"{resultado['tiempo_ejecucion_ms']:>11.4f}"
         )
 
     print("=" * ANCHO_TABLA)
@@ -121,18 +125,34 @@ def mostrar_solucion(
     nombre: str,
     resultado: Resultado,
     puzzle: Puzzle,
+    mostrar_tableros: bool = True,
 ) -> None:
-    """Imprime los estados de la solución encontrada."""
+    """Imprime la solución: fichas movidas, costo y, opcionalmente, tableros."""
     print(f"\nALGORITMO: {nombre}")
 
     if not resultado["encontrado"]:
-        print("No se encontró una solución.")
+        print("No se encontró una solución: el estado objetivo no es alcanzable.")
         return
 
     camino = resultado["camino"]
+    fichas = [
+        Puzzle.ficha_movida(actual, siguiente)
+        for actual, siguiente in zip(camino, camino[1:])
+    ]
+    print(f"Pasos (profundidad): {resultado['longitud_camino']}")
     print(f"Costo total: {resultado['costo_total']}")
-    print(f"Pasos: {resultado['longitud_camino']}")
-    print(f"Movimientos: {len(camino) - 1}")
+    print(f"Nodos expandidos: {resultado['nodos_expandidos']}")
+    print("Fichas movidas: " + (" ".join(map(str, fichas)) or "(ninguna)"))
+
+    if not mostrar_tableros:
+        return
+
+    costo_acumulado = 0
     for paso, estado in enumerate(camino):
-        print(f"\nPaso {paso}:")
+        if paso == 0:
+            print("\nEstado inicial:")
+        else:
+            costo_acumulado += fichas[paso - 1]
+            print(f"\nPaso {paso}: mover {fichas[paso - 1]} "
+                  f"(costo acumulado {costo_acumulado})")
         puzzle.imprimir(estado)

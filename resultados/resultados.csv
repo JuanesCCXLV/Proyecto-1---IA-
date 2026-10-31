@@ -1,0 +1,21 @@
+puzzle,algoritmo,ruta_encontrada,nodos_expandidos,costo_total,pasos,tiempo_ms
+8-puzzle fácil,DFS,SI,3,2,2,0.0432
+8-puzzle fácil,BFS,SI,7,2,2,0.0257
+8-puzzle fácil,BCU,SI,7,2,2,0.0353
+8-puzzle fácil,A* Manhattan,SI,3,2,2,0.0416
+8-puzzle fácil,A* Propia,SI,3,2,2,0.0238
+8-puzzle medio,DFS,SI,9,8,8,0.1775
+8-puzzle medio,BFS,SI,311,8,8,1.0498
+8-puzzle medio,BCU,SI,311,8,8,1.5570
+8-puzzle medio,A* Manhattan,SI,13,8,8,0.2056
+8-puzzle medio,A* Propia,SI,19,8,8,0.1752
+8-puzzle difícil,DFS,SI,82,80,80,1.7045
+8-puzzle difícil,BFS,SI,55409,20,20,205.9360
+8-puzzle difícil,BCU,SI,55409,20,20,343.3239
+8-puzzle difícil,A* Manhattan,SI,283,20,20,5.9798
+8-puzzle difícil,A* Propia,SI,3667,20,20,37.7350
+8-puzzle sin solución,DFS,NO,181440,0,0,3702.6964
+8-puzzle sin solución,BFS,NO,181440,0,0,650.4182
+8-puzzle sin solución,BCU,NO,181440,0,0,1129.3194
+8-puzzle sin solución,A* Manhattan,NO,181440,0,0,2274.9816
+8-puzzle sin solución,A* Propia,NO,181440,0,0,1607.2316
